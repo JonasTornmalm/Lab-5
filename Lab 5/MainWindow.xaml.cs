@@ -33,34 +33,105 @@ namespace Lab_5
             ListOfAdmins.Items.Refresh();
             ListOfUsers.Items.Refresh();
         }
+        private void ClearTextboxes()
+        {
+            NameTextbox.Clear();
+            MailTextbox.Clear();
+        }
+        private void UpdateLabels()
+        {
+            foreach (var user in User.users)
+            {
+                if (ListOfUsers.SelectedItem == user)
+                {
+                    UserMailLabel.Content = "Mail: " + user.MailAddress;
+                }
+                else if(ListOfUsers.SelectedItem == null)
+                {
+                    UserMailLabel.Content = "Mail: ";
+                }
+            }
+            foreach (var admin in User.admins)
+            {
+                if (ListOfAdmins.SelectedItem == admin)
+                {
+                    AdminMailLabel.Content = "Mail: " + admin.MailAddress;
+                }
+                else if (ListOfAdmins.SelectedItem == null)
+                {
+                    AdminMailLabel.Content = "Mail: ";
+                }
+            }
+        }
 
         private void AddButton_Click(object sender, RoutedEventArgs e)
         {
             User.users.Add(new User(NameTextbox.Text, MailTextbox.Text));
             UpdateListboxes();
+            UpdateLabels();
+            ClearTextboxes();
         }
-
         private void ListOfUsers_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            ToAdminButton.IsEnabled = true;
+            MakeAdminButton.IsEnabled = true;
+            MakeUserButton.IsEnabled = false;
             ChangeButton.IsEnabled = true;
             DeleteButton.IsEnabled = true;
+            UpdateLabels();
         }
         private void ListOfAdmins_SelectionChanged_1(object sender, SelectionChangedEventArgs e)
         {
-            ToUserButton.IsEnabled = true;
+            MakeUserButton.IsEnabled = true;
+            MakeAdminButton.IsEnabled = false;
             ChangeButton.IsEnabled = true;
             DeleteButton.IsEnabled = true;
+            UpdateLabels();
         }
 
         private void ChangeButton_Click(object sender, RoutedEventArgs e)
         {
-            
+            foreach (var user in User.users)
+            {
+                if(ListOfUsers.SelectedItem == user)
+                {
+                    user.Name = NameTextbox.Text;
+                    user.MailAddress = MailTextbox.Text;
+                }
+            }
+            foreach (var userAdmin in User.admins)
+            {
+                if(ListOfAdmins.SelectedItem == userAdmin)
+                {
+                    userAdmin.Name = NameTextbox.Text;
+                    userAdmin.MailAddress = MailTextbox.Text;
+                }
+            }
+            UpdateListboxes();
+            UpdateLabels();
+            ClearTextboxes();
         }
         private void DeleteButton_Click(object sender, RoutedEventArgs e)
         {
             User.users.Remove(ListOfUsers.SelectedItem as User);
+            User.admins.Remove(ListOfAdmins.SelectedItem as User);
             UpdateListboxes();
+            UpdateLabels();
+        }
+
+        private void MakeAdminButton_Click(object sender, RoutedEventArgs e)
+        {
+            User.admins.Add(ListOfUsers.SelectedItem as User);
+            User.users.RemoveAt(ListOfUsers.SelectedIndex);
+            UpdateListboxes();
+            UpdateLabels();
+        }
+
+        private void MakeUserButton_Click(object sender, RoutedEventArgs e)
+        {
+            User.users.Add(ListOfAdmins.SelectedItem as User);
+            User.admins.RemoveAt(ListOfAdmins.SelectedIndex);
+            UpdateListboxes();
+            UpdateLabels();
         }
     }
 }

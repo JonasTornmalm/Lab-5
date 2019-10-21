@@ -13,6 +13,9 @@ namespace Lab_5
         public string Name { get; set; }
         public string MailAddress { get; set; }
 
+        public string currentUser = string.Empty;
+        public int index = 0;
+
         public User(string name, string mailAddress)
         {
             Name = name;

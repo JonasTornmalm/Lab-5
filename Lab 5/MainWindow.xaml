@@ -20,8 +20,8 @@
         <Button x:Name="DeleteButton" Content="Delete" HorizontalAlignment="Left" Margin="575,176,0,0" VerticalAlignment="Top" Width="185" Height="60" IsEnabled="False" Click="DeleteButton_Click"/>
         <Label x:Name="AdminMailLabel" Content="Mail: " HorizontalAlignment="Left" Margin="36,293,0,0" VerticalAlignment="Top" Height="31" Width="170"/>
         <Label x:Name="UserMailLabel" Content="Mail: " HorizontalAlignment="Left" Margin="211,293,0,0" VerticalAlignment="Top" Height="31" Width="170"/>
-        <Button x:Name="ToAdminButton" Content="Make admin" HorizontalAlignment="Left" Margin="211,338,0,0" VerticalAlignment="Top" Width="170" Height="60" IsEnabled="False"/>
-        <Button x:Name="ToUserButton" Content="Make user" HorizontalAlignment="Left" Margin="36,338,0,0" VerticalAlignment="Top" Width="170" Height="60" IsEnabled="False"/>
+        <Button x:Name="MakeAdminButton" Content="Make admin" HorizontalAlignment="Left" Margin="211,338,0,0" VerticalAlignment="Top" Width="170" Height="60" IsEnabled="False" Click="MakeAdminButton_Click"/>
+        <Button x:Name="MakeUserButton" Content="Make user" HorizontalAlignment="Left" Margin="36,338,0,0" VerticalAlignment="Top" Width="170" Height="60" IsEnabled="False" Click="MakeUserButton_Click"/>
 
     </Grid>
 </Window>
