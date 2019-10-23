@@ -20,6 +20,10 @@ namespace Lab_5
     /// </summary>
     public partial class MainWindow : Window
     {
+        private User currentUser = null;
+        private User currentAdmin = null;
+        string nameInput;
+        string mailInput;
         public MainWindow()
         {
             InitializeComponent();
@@ -37,85 +41,119 @@ namespace Lab_5
         {
             NameTextbox.Clear();
             MailTextbox.Clear();
+            AdminMailLabel.Content = $"Mail: ";
+            UserMailLabel.Content = $"Mail: ";
         }
-        private void UpdateLabels()
+        private bool IsNameAndMailCorrect(string name, string mail, string titel)
         {
+
+            if (name == "" || mail == "")
+            {
+                MessageBox.Show("Name or mail is missing.", titel);
+                return false;
+            }
+            else if (!mail.Contains("@"))
+            {
+                MessageBox.Show("Mail is not correct, use @.", titel);
+                return false;
+            }
             foreach (var user in User.users)
             {
-                if (ListOfUsers.SelectedItem == user)
+                if (user.Name == name && user.MailAddress == mail)
                 {
-                    UserMailLabel.Content = "Mail: " + user.MailAddress;
-                }
-                else if(ListOfUsers.SelectedItem == null)
-                {
-                    UserMailLabel.Content = "Mail: ";
+                    MessageBox.Show("User already exist.", titel);
+                    return false;
                 }
             }
             foreach (var admin in User.admins)
             {
-                if (ListOfAdmins.SelectedItem == admin)
+                if (admin.Name == name && admin.MailAddress == mail)
                 {
-                    AdminMailLabel.Content = "Mail: " + admin.MailAddress;
-                }
-                else if (ListOfAdmins.SelectedItem == null)
-                {
-                    AdminMailLabel.Content = "Mail: ";
+                    MessageBox.Show("User already exist.", titel);
+                    return false;
                 }
             }
-        }
-
-        private void AddButton_Click(object sender, RoutedEventArgs e)
-        {
-            User.users.Add(new User(NameTextbox.Text, MailTextbox.Text));
-            UpdateListboxes();
-            UpdateLabels();
-            ClearTextboxes();
+            return true;
         }
         private void ListOfUsers_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            MakeAdminButton.IsEnabled = true;
-            MakeUserButton.IsEnabled = false;
-            ChangeButton.IsEnabled = true;
-            DeleteButton.IsEnabled = true;
-            UpdateLabels();
+            if(ListOfUsers.SelectedItem != null)
+            {
+                MakeAdminButton.IsEnabled = true;
+                MakeUserButton.IsEnabled = false;
+                ChangeButton.IsEnabled = true;
+                DeleteButton.IsEnabled = true;
+
+                ListOfAdmins.UnselectAll();
+                ClearTextboxes();
+                currentAdmin = null;
+                currentUser = (ListOfUsers.SelectedItem as User);
+                NameTextbox.Text = currentUser.Name;
+                MailTextbox.Text = currentUser.MailAddress;
+                UserMailLabel.Content = $"Mail: {currentUser.MailAddress}";
+            }
         }
         private void ListOfAdmins_SelectionChanged_1(object sender, SelectionChangedEventArgs e)
         {
-            MakeUserButton.IsEnabled = true;
-            MakeAdminButton.IsEnabled = false;
-            ChangeButton.IsEnabled = true;
-            DeleteButton.IsEnabled = true;
-            UpdateLabels();
-        }
+            if (ListOfAdmins.SelectedItem != null)
+            {
+                MakeUserButton.IsEnabled = true;
+                MakeAdminButton.IsEnabled = false;
+                ChangeButton.IsEnabled = true;
+                DeleteButton.IsEnabled = true;
 
+                ListOfUsers.UnselectAll();
+                ClearTextboxes();
+                currentUser = null;
+                currentAdmin = (ListOfAdmins.SelectedItem as User);
+                NameTextbox.Text = currentAdmin.Name;
+                MailTextbox.Text = currentAdmin.MailAddress;
+                AdminMailLabel.Content = $"Mail: {currentAdmin.MailAddress}";
+            }
+        }
+        private void AddButton_Click(object sender, RoutedEventArgs e)
+        {
+            nameInput = NameTextbox.Text.Trim();
+            mailInput = MailTextbox.Text.Replace(" ", "");
+            if (!IsNameAndMailCorrect(nameInput, mailInput, "Register user"))
+            {
+                return;
+            }
+            User.users.Add(new User(NameTextbox.Text, MailTextbox.Text));
+            UpdateListboxes();
+            ClearTextboxes();
+        }
         private void ChangeButton_Click(object sender, RoutedEventArgs e)
         {
-            foreach (var user in User.users)
+            nameInput = NameTextbox.Text.Trim();
+            mailInput = MailTextbox.Text.Replace(" ", "");
+            if(!IsNameAndMailCorrect(nameInput, mailInput, "Change user info"))
             {
-                if(ListOfUsers.SelectedItem == user)
-                {
-                    user.Name = NameTextbox.Text;
-                    user.MailAddress = MailTextbox.Text;
-                }
+                return;
             }
-            foreach (var userAdmin in User.admins)
+            if(currentUser != null)
             {
-                if(ListOfAdmins.SelectedItem == userAdmin)
-                {
-                    userAdmin.Name = NameTextbox.Text;
-                    userAdmin.MailAddress = MailTextbox.Text;
-                }
+                currentUser.Name = nameInput;
+                currentUser.MailAddress = mailInput;
+                UpdateListboxes();
+                ClearTextboxes();
+                ListOfUsers.UnselectAll();
             }
-            UpdateListboxes();
-            UpdateLabels();
-            ClearTextboxes();
+            else if (currentAdmin != null)
+            {
+                currentAdmin.Name = nameInput;
+                currentAdmin.MailAddress = mailInput;
+                UpdateListboxes();
+                ClearTextboxes();
+                ListOfAdmins.UnselectAll();
+            }
         }
         private void DeleteButton_Click(object sender, RoutedEventArgs e)
         {
             User.users.Remove(ListOfUsers.SelectedItem as User);
             User.admins.Remove(ListOfAdmins.SelectedItem as User);
             UpdateListboxes();
-            UpdateLabels();
+            ClearTextboxes();
         }
 
         private void MakeAdminButton_Click(object sender, RoutedEventArgs e)
@@ -123,7 +161,8 @@ namespace Lab_5
             User.admins.Add(ListOfUsers.SelectedItem as User);
             User.users.RemoveAt(ListOfUsers.SelectedIndex);
             UpdateListboxes();
-            UpdateLabels();
+            ClearTextboxes();
+            ListOfUsers.UnselectAll();
         }
 
         private void MakeUserButton_Click(object sender, RoutedEventArgs e)
@@ -131,7 +170,8 @@ namespace Lab_5
             User.users.Add(ListOfAdmins.SelectedItem as User);
             User.admins.RemoveAt(ListOfAdmins.SelectedIndex);
             UpdateListboxes();
-            UpdateLabels();
+            ClearTextboxes();
+            ListOfAdmins.UnselectAll();
         }
     }
 }
