@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -44,7 +45,7 @@ namespace Lab_5
             AdminMailLabel.Content = $"Mail: ";
             UserMailLabel.Content = $"Mail: ";
         }
-        private bool IsNameAndMailCorrect(string name, string mail, string titel)
+        private bool CheckIfNameAndMailValid(string name, string mail, string titel)
         {
 
             if (name == "" || mail == "")
@@ -92,6 +93,13 @@ namespace Lab_5
                 MailTextbox.Text = currentUser.MailAddress;
                 UserMailLabel.Content = $"Mail: {currentUser.MailAddress}";
             }
+            else
+            {
+                MakeUserButton.IsEnabled = false;
+                MakeAdminButton.IsEnabled = false;
+                ChangeButton.IsEnabled = false;
+                DeleteButton.IsEnabled = false;
+            }
         }
         private void ListOfAdmins_SelectionChanged_1(object sender, SelectionChangedEventArgs e)
         {
@@ -110,12 +118,19 @@ namespace Lab_5
                 MailTextbox.Text = currentAdmin.MailAddress;
                 AdminMailLabel.Content = $"Mail: {currentAdmin.MailAddress}";
             }
+            else
+            {
+                MakeUserButton.IsEnabled = false;
+                MakeAdminButton.IsEnabled = false;
+                ChangeButton.IsEnabled = false;
+                DeleteButton.IsEnabled = false;
+            }
         }
         private void AddButton_Click(object sender, RoutedEventArgs e)
         {
             nameInput = NameTextbox.Text.Trim();
             mailInput = MailTextbox.Text.Replace(" ", "");
-            if (!IsNameAndMailCorrect(nameInput, mailInput, "Register user"))
+            if (!CheckIfNameAndMailValid(nameInput, mailInput, "Register user"))
             {
                 return;
             }
@@ -127,7 +142,7 @@ namespace Lab_5
         {
             nameInput = NameTextbox.Text.Trim();
             mailInput = MailTextbox.Text.Replace(" ", "");
-            if(!IsNameAndMailCorrect(nameInput, mailInput, "Change user info"))
+            if(!CheckIfNameAndMailValid(nameInput, mailInput, "Change user info"))
             {
                 return;
             }
